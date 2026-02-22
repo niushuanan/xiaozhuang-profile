@@ -71,8 +71,8 @@ export default function About() {
             position="sticky"
             s={{ position: "relative", style: { top: "auto" } }}
             xs={{ style: { top: "auto" } }}
-            minWidth="200"
-            maxWidth="200"
+            minWidth={200}
+            maxWidth={200}
             paddingX="s"
             paddingBottom="xl"
             gap="l"
