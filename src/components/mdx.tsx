@@ -92,7 +92,14 @@ function createHeading(as: "h1" | "h2" | "h3" | "h4" | "h5" | "h6") {
   }: Omit<React.ComponentProps<typeof HeadingLink>, "as" | "id">) => {
     const slug = slugify(children as string);
     return (
-      <HeadingLink marginTop="24" marginBottom="12" as={as} id={slug} {...props}>
+      <HeadingLink
+        marginTop="24"
+        marginBottom="12"
+        as={as}
+        id={slug}
+        style={{ textAlign: "left" }}
+        {...props}
+      >
         {children}
       </HeadingLink>
     );
@@ -106,7 +113,7 @@ function createHeading(as: "h1" | "h2" | "h3" | "h4" | "h5" | "h6") {
 function createParagraph({ children }: TextProps) {
   return (
     <Text
-      style={{ lineHeight: "175%" }}
+      style={{ lineHeight: "175%", textAlign: "left" }}
       variant="body-default-m"
       onBackground="neutral-medium"
       marginTop="8"
@@ -156,7 +163,7 @@ function createList(as: "ul" | "ol") {
 
 function createListItem({ children }: { children: ReactNode }) {
   return (
-    <ListItem marginTop="4" marginBottom="8" style={{ lineHeight: "175%" }}>
+    <ListItem marginTop="4" marginBottom="8" style={{ lineHeight: "175%", textAlign: "left" }}>
       {children}
     </ListItem>
   );

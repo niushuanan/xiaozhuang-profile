@@ -16,9 +16,10 @@ interface TableOfContentsProps {
       subItems: boolean;
     };
   };
+  inline?: boolean;
 }
 
-const TableOfContents: React.FC<TableOfContentsProps> = ({ structure, about }) => {
+const TableOfContents: React.FC<TableOfContentsProps> = ({ structure, about, inline = false }) => {
   const scrollTo = (id: string, offset: number) => {
     const element = document.getElementById(id);
     if (element) {
@@ -36,14 +37,14 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ structure, about }) =
 
   return (
     <Column
-      left="0"
+      left={inline ? undefined : "0"}
       style={{
-        top: "50%",
-        transform: "translateY(-50%)",
+        top: inline ? undefined : "50%",
+        transform: inline ? undefined : "translateY(-50%)",
         whiteSpace: "nowrap",
       }}
-      position="fixed"
-      paddingLeft="24"
+      position={inline ? "relative" : "fixed"}
+      paddingLeft={inline ? "0" : "24"}
       gap="32"
       m={{ hide: true }}
     >

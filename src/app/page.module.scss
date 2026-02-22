@@ -1,0 +1,36 @@
+.marquee {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.track {
+  display: flex;
+  gap: 16px;
+  width: max-content;
+  animation: marquee 56s linear infinite;
+}
+
+.item {
+  flex: 0 0 auto;
+  width: 312px;
+  height: 204px;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 768px) {
+  .item {
+    width: 240px;
+    height: 168px;
+  }
+}

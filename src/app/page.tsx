@@ -1,19 +1,16 @@
+import { EditableAvatar } from "@/components/EditableAvatar";
+import { MarqueeStrip } from "@/components/MarqueeStrip";
+import { about, baseURL, home, person, routes } from "@/resources";
 import {
-  Heading,
-  Text,
   Button,
-  Avatar,
-  RevealFx,
   Column,
-  Badge,
+  Icon,
+  Meta,
   Row,
   Schema,
-  Meta,
-  Line,
+  SmartLink,
+  Text,
 } from "@once-ui-system/core";
-import { home, about, person, baseURL, routes } from "@/resources";
-import { Mailchimp } from "@/components";
-import { Projects } from "@/components/work/Projects";
 import { Posts } from "@/components/blog/Posts";
 
 export async function generateMetadata() {
@@ -28,7 +25,7 @@ export async function generateMetadata() {
 
 export default function Home() {
   return (
-    <Column maxWidth="m" gap="xl" paddingY="12" horizontal="center">
+    <Column maxWidth="m" gap="xl" paddingY="12" horizontal="start">
       <Schema
         as="webPage"
         baseURL={baseURL}
@@ -42,89 +39,75 @@ export default function Home() {
           image: `${baseURL}${person.avatar}`,
         }}
       />
-      <Column fillWidth horizontal="center" gap="m">
-        <Column maxWidth="s" horizontal="center" align="center">
-          {home.featured.display && (
-            <RevealFx
-              fillWidth
-              horizontal="center"
-              paddingTop="16"
-              paddingBottom="32"
-              paddingLeft="12"
-            >
-              <Badge
-                background="brand-alpha-weak"
-                paddingX="12"
-                paddingY="4"
-                onBackground="neutral-strong"
-                textVariant="label-default-s"
-                arrow={false}
-                href={home.featured.href}
-              >
-                <Row paddingY="2">{home.featured.title}</Row>
-              </Badge>
-            </RevealFx>
-          )}
-          <RevealFx translateY="4" fillWidth horizontal="center" paddingBottom="16">
-            <Heading wrap="balance" variant="display-strong-l">
-              {home.headline}
-            </Heading>
-          </RevealFx>
-          <RevealFx translateY="8" delay={0.2} fillWidth horizontal="center" paddingBottom="32">
-            <Text wrap="balance" onBackground="neutral-weak" variant="heading-default-xl">
-              {home.subline}
-            </Text>
-          </RevealFx>
-          <RevealFx paddingTop="12" delay={0.4} horizontal="center" paddingLeft="12">
+
+      <Row fillWidth gap="40" vertical="center" s={{ direction: "column", gap: "24" }}>
+        <EditableAvatar src={person.avatar} size="xl" storageKey="avatar" />
+        <Column fillWidth gap="16">
+          <Text variant="display-strong-s">庄泓铠｜啥都懂一些的产品经理</Text>
+          <Text variant="body-default-m">日常折腾 AI / 消费电子 / 自动驾驶</Text>
+          <Text variant="body-default-m">长期关注互联网与科技的商业模式与投资动态。</Text>
+          <Text variant="body-default-m">
+            不断追问：什么是真正的“好生意”，什么是好产品。
+          </Text>
+          <Row gap="16" wrap marginTop="s">
+            <Row gap="8" vertical="center">
+              <Icon name="phone" onBackground="neutral-weak" />
+              <SmartLink href="tel:+8618675459644">
+                <Text variant="label-default-m">+86 18675459644</Text>
+              </SmartLink>
+            </Row>
+            <Row gap="8" vertical="center">
+              <Icon name="email" onBackground="neutral-weak" />
+              <SmartLink href="mailto:1379804870zhk@gmail.com">
+                <Text variant="label-default-m">1379804870zhk@gmail.com</Text>
+              </SmartLink>
+            </Row>
+          </Row>
+          <Row gap="12" marginTop="s" wrap>
             <Button
               id="about"
               data-border="rounded"
               href={about.path}
-              variant="secondary"
+              variant="primary"
               size="m"
               weight="default"
               arrowIcon
             >
-              <Row gap="8" vertical="center" paddingRight="4">
-                {about.avatar.display && (
-                  <Avatar
-                    marginRight="8"
-                    style={{ marginLeft: "-0.75rem" }}
-                    src={person.avatar}
-                    size="m"
-                  />
-                )}
-                {about.title}
-              </Row>
+              了解更多
             </Button>
-          </RevealFx>
+            {routes["/blog"] && (
+              <Button
+                data-border="rounded"
+                href="/blog"
+                variant="secondary"
+                size="m"
+                weight="default"
+              >
+                查看博客
+              </Button>
+            )}
+          </Row>
         </Column>
-      </Column>
-      <RevealFx translateY="16" delay={0.6}>
-        <Projects range={[1, 1]} />
-      </RevealFx>
+      </Row>
+
       {routes["/blog"] && (
-        <Column fillWidth gap="24" marginBottom="l">
-          <Row fillWidth paddingRight="64">
-            <Line maxWidth={48} />
-          </Row>
-          <Row fillWidth gap="24" marginTop="40" s={{ direction: "column" }}>
-            <Row flex={1} paddingLeft="l" paddingTop="24">
-              <Heading as="h2" variant="display-strong-xs" wrap="balance">
-                Latest from the blog
-              </Heading>
-            </Row>
-            <Row flex={3} paddingX="20">
-              <Posts range={[1, 2]} columns="2" />
-            </Row>
-          </Row>
-          <Row fillWidth paddingLeft="64" horizontal="end">
-            <Line maxWidth={48} />
-          </Row>
+        <Column fillWidth gap="24" marginTop="xl">
+          <MarqueeStrip
+            images={[
+              "/images/gallery/horizontal-1.jpg",
+              "/images/gallery/vertical-1.jpg",
+              "/images/gallery/horizontal-2.jpg",
+              "/images/gallery/vertical-2.jpg",
+              "/images/gallery/horizontal-3.jpg",
+              "/images/gallery/vertical-3.jpg",
+              "/images/gallery/horizontal-4.jpg",
+              "/images/gallery/vertical-4.jpg",
+            ]}
+          />
+          <Text variant="heading-strong-l">全部文章</Text>
+          <Posts columns="1" thumbnail direction="row" />
         </Column>
       )}
-      <Projects range={[2]} />
-      <Mailchimp />
     </Column>
   );
 }

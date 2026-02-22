@@ -1,5 +1,5 @@
-import { IconName } from "@/resources/icons";
-import { zones } from "tzdata";
+import type { IconName } from "@/resources/icons";
+import type { zones } from "tzdata";
 
 /**
  * IANA time zone string (e.g., 'Asia/Calcutta', 'Europe/Vienna').
@@ -151,6 +151,35 @@ export interface About extends BasePageConfig {
       /** Role or job title */
       role: string;
       /** Achievements at the company */
+      achievements: React.ReactNode[];
+      /** Images related to the experience */
+      images?: Array<{
+        /** Image source path */
+        src: string;
+        /** Image alt text */
+        alt: string;
+        /** Image width ratio */
+        width: number;
+        /** Image height ratio */
+        height: number;
+      }>;
+    }>;
+  };
+  /** Entrepreneurship section */
+  entrepreneurship: {
+    /** Whether to display entrepreneurship section */
+    display: boolean;
+    /** Title for the entrepreneurship section */
+    title: string;
+    /** List of entrepreneurial experiences */
+    experiences: Array<{
+      /** Company/Project name */
+      company: string;
+      /** Timeframe */
+      timeframe: string;
+      /** Role or job title */
+      role: string;
+      /** Achievements */
       achievements: React.ReactNode[];
       /** Images related to the experience */
       images?: Array<{
