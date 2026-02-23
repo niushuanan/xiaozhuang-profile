@@ -1,50 +1,18 @@
 "use client";
 
-import { getCaptions, getUploadedUrl, updateCaption, uploadFile } from "@/utils/uploads";
-import { Button, Text } from "@once-ui-system/core";
+import { getCaptions, getUploadedUrl } from "@/utils/uploads";
+import { Text } from "@once-ui-system/core";
 import { useEffect, useMemo, useRef, useState } from "react";
-import Cropper from "react-easy-crop";
 import styles from "./MarqueeStrip.module.scss";
 
 interface MarqueeStripProps {
   images: string[];
 }
 
-type Area = { width: number; height: number; x: number; y: number };
-
-async function getCroppedBlob(imageSrc: string, crop: Area): Promise<Blob> {
-  const image = new Image();
-  image.crossOrigin = "anonymous";
-  image.src = imageSrc;
-  await new Promise((resolve, reject) => {
-    image.onload = resolve;
-    image.onerror = reject;
-  });
-
-  const canvas = document.createElement("canvas");
-  canvas.width = crop.width;
-  canvas.height = crop.height;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Canvas context not available");
-
-  ctx.drawImage(image, crop.x, crop.y, crop.width, crop.height, 0, 0, crop.width, crop.height);
-
-  return await new Promise((resolve) => {
-    canvas.toBlob((blob) => resolve(blob as Blob), "image/jpeg", 0.92);
-  });
-}
+const isDev = process.env.NODE_ENV === "development";
 
 export function MarqueeStrip({ images }: MarqueeStripProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const marqueeRef = useRef<HTMLDivElement>(null);
   const [srcs, setSrcs] = useState<string[]>([]);
-
-  const [cropOpen, setCropOpen] = useState(false);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
-  const [pendingImage, setPendingImage] = useState<string | null>(null);
   const [captions, setCaptions] = useState<Record<string, string>>({});
   const [isChecking, setIsChecking] = useState(true);
 
@@ -64,53 +32,8 @@ export function MarqueeStrip({ images }: MarqueeStripProps) {
     };
   }, [images]);
 
-
-  const handleContextMenu = (index: number) => (e: React.MouseEvent) => {
-    e.preventDefault();
-    setActiveIndex(index);
-    inputRef.current?.click();
-  };
-
-  const handleClick = (index: number) => async () => {
-    const key = `hero-${index}`;
-    const currentCaption = captions[key] || "";
-    const newCaption = window.prompt("请输入照片说明文字（留空则不显示）：", currentCaption);
-
-    if (newCaption !== null) {
-      setCaptions((prev) => ({ ...prev, [key]: newCaption.trim() }));
-      await updateCaption(key, newCaption.trim());
-    }
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || activeIndex === null) return;
-    const objectUrl = URL.createObjectURL(file);
-    setPendingImage(objectUrl);
-    setCrop({ x: 0, y: 0 });
-    setZoom(1);
-    setCropOpen(true);
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
-  };
-
-  const handleCropComplete = (_: Area, croppedPixels: Area) => {
-    setCroppedAreaPixels(croppedPixels);
-  };
-
-  const saveCrop = async () => {
-    if (!pendingImage || !croppedAreaPixels || activeIndex === null) return;
-    const blob = await getCroppedBlob(pendingImage, croppedAreaPixels);
-    const file = new File([blob], `hero-${activeIndex}.jpg`, { type: "image/jpeg" });
-    const key = `hero-${activeIndex}`;
-    const url = await uploadFile(file, key);
-    if (url) {
-      const bust = `${url}?t=${Date.now()}`;
-      setSrcs((prev) => prev.map((src, i) => (i === activeIndex ? bust : src)));
-    }
-    setCropOpen(false);
-    setPendingImage(null);
+  const handleClick = (index: number) => () => {
+    if (!isDev) return;
   };
 
   const looped = useMemo(() => {
@@ -118,13 +41,11 @@ export function MarqueeStrip({ images }: MarqueeStripProps) {
     return [...srcs, ...srcs, ...srcs, ...srcs, ...srcs, ...srcs];
   }, [srcs]);
 
-
   return (
     <>
       <div
         className={styles.marquee}
         aria-label="Featured images"
-        ref={marqueeRef}
         style={{ opacity: isChecking ? 0 : 1, transition: "opacity 0.3s ease" }}
       >
         <div className={styles.track}>
@@ -135,15 +56,14 @@ export function MarqueeStrip({ images }: MarqueeStripProps) {
               <div
                 key={`marquee-item-${index}-${i}`}
                 className={styles.itemWrapper}
-                onContextMenu={handleContextMenu(index)}
                 onClick={handleClick(index)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
+                  if (isDev && (e.key === "Enter" || e.key === " ")) {
                     handleClick(index)();
                   }
                 }}
-                tabIndex={0}
-                role="button"
+                tabIndex={isDev ? 0 : -1}
+                role={isDev ? "button" : "img"}
               >
                 <img className={styles.item} src={src} alt="featured" />
                 {caption && (
@@ -156,54 +76,6 @@ export function MarqueeStrip({ images }: MarqueeStripProps) {
           })}
         </div>
       </div>
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        style={{ display: "none" }}
-        onChange={handleFileChange}
-      />
-
-      {cropOpen && pendingImage && (
-        <div className={styles.cropOverlay}>
-          <div className={styles.cropPanel}>
-            <div className={styles.cropArea}>
-              <Cropper
-                image={pendingImage}
-                crop={crop}
-                zoom={zoom}
-                aspect={3 / 2}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={handleCropComplete}
-              />
-            </div>
-            <div className={styles.cropControls}>
-              <div className={styles.controlGroup}>
-                <Text variant="label-default-m" onBackground="neutral-weak">
-                  缩放
-                </Text>
-                <input
-                  type="range"
-                  min={1}
-                  max={3}
-                  step={0.01}
-                  value={zoom}
-                  onChange={(e) => setZoom(Number(e.target.value))}
-                />
-              </div>
-              <div className={styles.controlGroup}>
-                <Button variant="secondary" size="s" onClick={() => setCropOpen(false)}>
-                  取消
-                </Button>
-                <Button variant="primary" size="s" onClick={saveCrop}>
-                  保存裁切
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

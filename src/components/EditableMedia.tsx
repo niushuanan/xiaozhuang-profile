@@ -1,9 +1,9 @@
 "use client";
 
+import { getUploadedUrl, uploadFile } from "@/utils/uploads";
 import { Media } from "@once-ui-system/core";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
-import { getUploadedUrl, uploadFile } from "@/utils/uploads";
 
 interface EditableMediaProps {
   src: string;
@@ -19,6 +19,8 @@ interface EditableMediaProps {
   style?: React.CSSProperties;
   className?: string;
 }
+
+const isDev = process.env.NODE_ENV === "development";
 
 export const EditableMedia: React.FC<EditableMediaProps> = ({
   src,
@@ -52,11 +54,13 @@ export const EditableMedia: React.FC<EditableMediaProps> = ({
   }, [storageKey, src]);
 
   const handleContextMenu = (e: React.MouseEvent) => {
+    if (!isDev) return;
     e.preventDefault();
     fileInputRef.current?.click();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isDev) return;
     const file = e.target.files?.[0];
     if (file) {
       uploadFile(file, storageKey).then((url) => {
@@ -91,17 +95,19 @@ export const EditableMedia: React.FC<EditableMediaProps> = ({
           sizes={sizes}
           aspectRatio={aspectRatio}
           priority={priority}
-          style={{ cursor: "pointer" }}
+          style={{ cursor: isDev ? "pointer" : "default" }}
           onContextMenu={handleContextMenu}
         />
       )}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        style={{ display: "none" }}
-        onChange={handleFileChange}
-      />
+      {isDev && (
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+        />
+      )}
     </div>
   );
 };

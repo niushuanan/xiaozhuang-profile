@@ -1,15 +1,17 @@
 "use client";
 
+import { getUploadedUrl, uploadFile } from "@/utils/uploads";
 import { Avatar } from "@once-ui-system/core";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
-import { getUploadedUrl, uploadFile } from "@/utils/uploads";
 
 interface EditableAvatarProps {
   src: string;
   size?: "xs" | "s" | "m" | "l" | "xl";
   storageKey?: string;
 }
+
+const isDev = process.env.NODE_ENV === "development";
 
 export const EditableAvatar: React.FC<EditableAvatarProps> = ({
   src,
@@ -30,11 +32,13 @@ export const EditableAvatar: React.FC<EditableAvatarProps> = ({
   }, [storageKey]);
 
   const handleContextMenu = (e: React.MouseEvent) => {
+    if (!isDev) return;
     e.preventDefault();
     fileInputRef.current?.click();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isDev) return;
     const file = e.target.files?.[0];
     if (file) {
       uploadFile(file, storageKey).then((url) => {
@@ -52,15 +56,17 @@ export const EditableAvatar: React.FC<EditableAvatarProps> = ({
         src={imageSrc}
         size={size}
         onContextMenu={handleContextMenu}
-        style={{ cursor: "pointer" }}
+        style={{ cursor: isDev ? "pointer" : "default" }}
       />
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        style={{ display: "none" }}
-        onChange={handleFileChange}
-      />
+      {isDev && (
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+        />
+      )}
     </>
   );
 };
