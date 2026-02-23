@@ -1,0 +1,52 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    margin-top: 12px;
+}
+
+.item {
+    display: flex;
+    gap: 20px;
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--neutral-alpha-weak);
+    border: 1px solid var(--neutral-alpha-medium);
+    transition: background 0.2s ease;
+
+    &:hover {
+        background: var(--neutral-alpha-medium);
+    }
+}
+
+.iconSection {
+    display: flex;
+    align-items: flex-start;
+    padding-top: 2px;
+}
+
+.iconCircle {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--brand-alpha-weak);
+    color: var(--brand-on-background-weak);
+    border-radius: 50%;
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+@media (max-width: 768px) {
+    .item {
+        gap: 16px;
+        padding: 12px;
+    }
+}

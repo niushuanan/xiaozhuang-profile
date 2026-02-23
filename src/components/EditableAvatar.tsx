@@ -38,7 +38,10 @@ export const EditableAvatar: React.FC<EditableAvatarProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       uploadFile(file, storageKey).then((url) => {
-        if (url) setImageSrc(url);
+        if (url) {
+          const bust = `${url}?t=${Date.now()}`;
+          setImageSrc(bust);
+        }
       });
     }
   };

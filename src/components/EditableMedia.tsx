@@ -34,18 +34,22 @@ export const EditableMedia: React.FC<EditableMediaProps> = ({
   style,
   className,
 }) => {
-  const [imageSrc, setImageSrc] = useState<string>(src);
+  const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
+  const [isChecking, setIsChecking] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let mounted = true;
     getUploadedUrl(storageKey).then((url) => {
-      if (mounted && url) setImageSrc(url);
+      if (mounted) {
+        setImageSrc(url || src);
+        setIsChecking(false);
+      }
     });
     return () => {
       mounted = false;
     };
-  }, [storageKey]);
+  }, [storageKey, src]);
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -56,27 +60,41 @@ export const EditableMedia: React.FC<EditableMediaProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       uploadFile(file, storageKey).then((url) => {
-        if (url) setImageSrc(url);
+        if (url) {
+          const bust = `${url}?t=${Date.now()}`;
+          setImageSrc(bust);
+        }
       });
     }
   };
 
   return (
-    <>
-      <Media
-        src={imageSrc}
-        alt={alt}
-        width={width}
-        height={height}
-        radius={radius}
-        enlarge={enlarge}
-        sizes={sizes}
-        aspectRatio={aspectRatio}
-        priority={priority}
-        style={{ cursor: "pointer", ...style }}
-        className={className}
-        onContextMenu={handleContextMenu}
-      />
+    <div
+      style={{
+        display: "flex",
+        width: width || (aspectRatio ? "100%" : "auto"),
+        height: height || "auto",
+        aspectRatio: aspectRatio,
+        position: "relative",
+        ...style,
+      }}
+      className={className}
+    >
+      {!isChecking && imageSrc && (
+        <Media
+          src={imageSrc}
+          alt={alt}
+          width={width}
+          height={height}
+          radius={radius}
+          enlarge={enlarge}
+          sizes={sizes}
+          aspectRatio={aspectRatio}
+          priority={priority}
+          style={{ cursor: "pointer" }}
+          onContextMenu={handleContextMenu}
+        />
+      )}
       <input
         ref={fileInputRef}
         type="file"
@@ -84,6 +102,6 @@ export const EditableMedia: React.FC<EditableMediaProps> = ({
         style={{ display: "none" }}
         onChange={handleFileChange}
       />
-    </>
+    </div>
   );
 };

@@ -1,5 +1,6 @@
 import type { About, Blog, Gallery, Home, Newsletter, Person, Social, Work } from "@/types";
 import { Line, Row, Text } from "@once-ui-system/core";
+import { IntroMarquee } from "@/components/IntroMarquee";
 
 const person: Person = {
   firstName: "泓铠",
@@ -8,7 +9,8 @@ const person: Person = {
   role: "AI硬件产品经理",
   avatar: "/images/avatar.jpg",
   email: "1379804870@qq.com",
-  location: "深圳 · 南山区",
+  location: "Asia/Shanghai",
+  locationLabel: "深圳 · 南山区",
   languages: [],
 };
 
@@ -47,17 +49,15 @@ const home: Home = {
   },
   subline: (
     <>
-      产品经理 | 创业者
+      啥都懂一些的产品经理
       <br />
-      聊聊车 · 琢磨AI &科技产品
+      日常折腾好玩的 AI 产品 / 消费电子 / 自动驾驶
       <br />
-      探索互联网，科技与商业模式的本质
+      累计时长 100h+
       <br />
-      什么是好的商业模式？
+      长期关注互联网与科技的商业模式与投资动态。
       <br />
-      什么是好的生意？
-      <br />
-      30岁前独自环游世界 ing
+      不断追问：什么是真正的"好生意"，什么是好产品
     </>
   ),
 };
@@ -112,7 +112,7 @@ const about: About = {
         role: "AI影像产品实习生",
         achievements: [
           <>
-            "AI云台生命键"设计：负责AI影像手机的新增按键产品定义与设计。通过竞品调研，分析对比大疆Pocket3、OPPO、vivo、苹果等品牌创作键的软件方案、交互范式、硬件形态等；同时基于实际场景和爬取1000+用户反馈，深入分析其优劣势；最终完成按键功能的优先级排序，设计多种可行性方案，并结合产品形态与实际应用场景，提出"AI云台生命键"的理念，输出完整的按键方案。产品方案被采纳。
+            "AI云台生命键"设计：负责AI影像手机的新增按键产品 definition 与设计。通过竞品调研，分析对比大疆Pocket3、OPPO、vivo、苹果等品牌创作键的软件方案、交互范式、硬件形态等；同时基于实际场景和爬取1000+用户反馈，深入分析其优劣势；最终完成按键功能的优先级排序，设计多种可行性方案，并结合产品形态与实际应用场景，提出"AI云台生命键"的理念，输出完整的按键方案。产品方案被采纳。
           </>,
           <>
             全场景配件方案设计：负责产品配件方案设计。通过竞品调研，分析对比大疆、Insta、OPPO、vivo的手持云台、运动相机等产品线70+款产品，分别从功能导向、核心使用场景、需求背景、销量等角度进行深度挖掘；基于产品调研结果，从产品第一性角度明确"不做Always
@@ -127,7 +127,14 @@ const about: About = {
             System"的趋势总结。最终完成组内汇报，提高自己与组内成员对AI OS与AI Agent产品的认知水平。
           </>,
         ],
-        images: [],
+        images: [
+          {
+            src: "/images/gallery/horizontal-1.jpg",
+            alt: "深智联实习",
+            width: 16,
+            height: 9,
+          },
+        ],
       },
       {
         company: "OPPO",
@@ -146,7 +153,14 @@ const about: About = {
             Store评分由3.1提升到3.8。
           </>,
         ],
-        images: [],
+        images: [
+          {
+            src: "/images/gallery/horizontal-2.jpg",
+            alt: "OPPO工作",
+            width: 16,
+            height: 9,
+          },
+        ],
       },
       {
         company: "玖治科技 (智能戒指企业)",
@@ -161,7 +175,14 @@ const about: About = {
             App页面布局和功能设计：对多个产品模块中进行功能优化。基于社群内海外用户调研，新增App内黑夜/白天模式切换功能，提高老年人对于产品的阅读体验。将"身心平衡"页面由雷达图调整为四叶草图，增强数据可视性且更符合积累型运动产品需要；优化"觉知-生命体征"页面展示，以时间为脉络动态呈现生命体征的变化趋势，提升了视觉表达的简洁性与功能的可读性。
           </>,
         ],
-        images: [],
+        images: [
+          {
+            src: "/images/gallery/horizontal-3.jpg",
+            alt: "商汤实习",
+            width: 16,
+            height: 9,
+          },
+        ],
       },
     ],
   },
@@ -222,8 +243,6 @@ const gallery: Gallery = {
   label: "Gallery",
   title: `Photo gallery – ${person.name}`,
   description: `A photo collection by ${person.name}`,
-  // Images by https://lorant.one
-  // These are placeholder images, replace with your own
   images: [
     {
       src: "/images/gallery/horizontal-1.jpg",

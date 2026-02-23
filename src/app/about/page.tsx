@@ -62,7 +62,7 @@ export default function About() {
           image: `${baseURL}${person.avatar}`,
         }}
       />
-      <Row fillWidth s={{ direction: "column" }} horizontal="center">
+      <Row fillWidth horizontal="center" gap="xl">
         {about.avatar.display && (
           <Column
             className={styles.avatar}
@@ -71,8 +71,7 @@ export default function About() {
             position="sticky"
             s={{ position: "relative", style: { top: "auto" } }}
             xs={{ style: { top: "auto" } }}
-            minWidth={200}
-            maxWidth={200}
+            style={{ minWidth: "200px", maxWidth: "200px" }}
             paddingX="s"
             paddingBottom="xl"
             gap="l"
@@ -82,25 +81,25 @@ export default function About() {
             <EditableAvatar src={person.avatar} size="xl" storageKey="avatar" />
             <Row gap="8" vertical="center">
               <Icon onBackground="accent-weak" name="globe" />
-              {person.location}
+              {person.locationLabel}
             </Row>
             {person.languages && person.languages.length > 0 && (
               <Row wrap gap="8">
-                {person.languages.map((language, index) => (
-                  <Tag key={index} size="l">
+                {person.languages.map((language) => (
+                  <Tag key={language} size="l">
                     {language}
                   </Tag>
                 ))}
               </Row>
             )}
             {about.tableOfContent.display && (
-              <Column gap="24" s={{ hide: true }} style={{ width: "100%" }}>
+              <Column gap="24" style={{ width: "100%" }}>
                 <TableOfContents structure={structure} about={about} inline />
               </Column>
             )}
           </Column>
         )}
-        <Column className={styles.blockAlign} flex={10} maxWidth={56}>
+        <Column className={styles.blockAlign} flex={10} maxWidth={56} minWidth={0}>
           <Column id={about.intro.title} fillWidth vertical="center" marginBottom="32">
             <Heading className={styles.textAlign} variant="display-strong-xl" marginBottom="s">
               {person.name}
@@ -195,28 +194,7 @@ export default function About() {
                         ),
                       )}
                     </Column>
-                    {experience.images && experience.images.length > 0 && (
-                      <Row fillWidth paddingTop="m" paddingLeft="40" gap="12" wrap>
-                        {experience.images.map((image, index) => (
-                          <Row
-                            key={index}
-                            border="neutral-medium"
-                            radius="m"
-                            minWidth={image.width}
-                            height={image.height}
-                          >
-                            <EditableMedia
-                              enlarge
-                              radius="m"
-                              sizes={image.width.toString()}
-                              alt={image.alt}
-                              src={image.src}
-                              storageKey={`work-${experience.company}-${index}`}
-                            />
-                          </Row>
-                        ))}
-                      </Row>
-                    )}
+
                   </Column>
                 ))}
               </Column>

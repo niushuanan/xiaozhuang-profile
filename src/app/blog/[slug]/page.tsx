@@ -14,6 +14,7 @@ import {
   Icon,
   Line,
   Meta,
+  RevealFx,
   Row,
   Schema,
   SmartLink,
@@ -72,83 +73,98 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
     })) || [];
 
   return (
-    <Row fillWidth>
-      <Row maxWidth={12} m={{ hide: true }} />
-      <Row fillWidth horizontal="center">
-        <Column as="section" maxWidth="m" horizontal="center" gap="l" paddingTop="24">
-          <Schema
-            as="blogPosting"
-            baseURL={baseURL}
-            path={`${blog.path}/${post.slug}`}
-            title={post.metadata.title}
-            description={post.metadata.summary}
-            datePublished={post.metadata.publishedAt}
-            dateModified={post.metadata.publishedAt}
-            image={
-              post.metadata.image ||
-              `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}`
-            }
-            author={{
-              name: person.name,
-              url: `${baseURL}${about.path}`,
-              image: `${baseURL}${person.avatar}`,
-            }}
-          />
-          <Column maxWidth="m" gap="16" horizontal="center" align="center">
-            <SmartLink href="/blog">
-              <Text variant="label-strong-m">Blog</Text>
-            </SmartLink>
-            <Text variant="body-default-xs" onBackground="neutral-weak" marginBottom="12">
-              {post.metadata.publishedAt && formatDate(post.metadata.publishedAt)}
-            </Text>
-            <Heading variant="display-strong-m">{post.metadata.title}</Heading>
-            {post.metadata.subtitle && (
-              <Text
-                variant="body-default-l"
-                onBackground="neutral-weak"
-                align="center"
-                style={{ fontStyle: "italic" }}
-              >
-                {post.metadata.subtitle}
+    <RevealFx
+      translateY="8"
+      speed="medium"
+      fillWidth
+      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+    >
+      <Row fillWidth>
+        <Row maxWidth={12} m={{ hide: true }} />
+        <Row fillWidth horizontal="center">
+          <Column as="section" maxWidth="m" horizontal="center" gap="l" paddingTop="24">
+            <Schema
+              as="blogPosting"
+              baseURL={baseURL}
+              path={`${blog.path}/${post.slug}`}
+              title={post.metadata.title}
+              description={post.metadata.summary}
+              datePublished={post.metadata.publishedAt}
+              dateModified={post.metadata.publishedAt}
+              image={
+                post.metadata.image ||
+                `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}`
+              }
+              author={{
+                name: person.name,
+                url: `${baseURL}${about.path}`,
+                image: `${baseURL}${person.avatar}`,
+              }}
+            />
+            <Column maxWidth="m" gap="16" horizontal="center" align="center">
+              <SmartLink href="/blog">
+                <Text variant="label-strong-m">Blog</Text>
+              </SmartLink>
+              <Text variant="body-default-xs" onBackground="neutral-weak" marginBottom="12">
+                {post.metadata.publishedAt && formatDate(post.metadata.publishedAt)}
               </Text>
-            )}
-            <Row marginBottom="32" horizontal="center">
-              <Row gap="16" vertical="center">
-                <EditableAvatar size="s" src={person.avatar} storageKey="avatar" />
-                <Text variant="label-default-m" onBackground="brand-weak">
-                  {person.name}
+              <Heading variant="display-strong-m">{post.metadata.title}</Heading>
+              {post.metadata.subtitle && (
+                <Text
+                  variant="body-default-l"
+                  onBackground="neutral-weak"
+                  align="center"
+                  style={{ fontStyle: "italic" }}
+                >
+                  {post.metadata.subtitle}
                 </Text>
+              )}
+              <Row marginBottom="32" horizontal="center">
+                <Row gap="16" vertical="center">
+                  <EditableAvatar size="s" src={person.avatar} storageKey="avatar" />
+                  <Text variant="label-default-m" onBackground="brand-weak">
+                    {person.name}
+                  </Text>
+                </Row>
               </Row>
-            </Row>
-          </Column>
-          <Column as="article" maxWidth="s" horizontal="start" align="start" gap="24">
-            {post.metadata.image && (
-              <EditableMedia
-                src={post.metadata.image}
-                alt={post.metadata.title}
-                aspectRatio="16/9"
-                priority
-                sizes="(min-width: 768px) 100vw, 768px"
-                radius="l"
-                storageKey={`blog-cover-${post.slug}`}
-              />
-            )}
-            <CustomMDX source={post.content} />
-          </Column>
+            </Column>
+            <Column as="article" maxWidth="s" horizontal="start" align="start" gap="24">
+              {post.metadata.image && (
+                <EditableMedia
+                  src={post.metadata.image}
+                  alt={post.metadata.title}
+                  aspectRatio="16/9"
+                  priority
+                  sizes="(min-width: 768px) 100vw, 768px"
+                  radius="l"
+                  storageKey={`blog-cover-${post.slug}`}
+                />
+              )}
+              <CustomMDX source={post.content} />
+            </Column>
 
-          <ShareSection title={post.metadata.title} url={`${baseURL}${blog.path}/${post.slug}`} />
+            <ShareSection title={post.metadata.title} url={`${baseURL}${blog.path}/${post.slug}`} />
 
-          <Column fillWidth gap="40" horizontal="center" marginTop="40">
-            <Line maxWidth="40" />
-            <Text as="h2" id="recent-posts" variant="heading-strong-xl" marginBottom="24">
-              Recent posts
-            </Text>
-            <Posts exclude={[post.slug]} range={[1, 2]} columns="2" thumbnail direction="column" />
+            <Column fillWidth gap="40" horizontal="center" marginTop="40">
+              <Line maxWidth="40" />
+              <Text as="h2" id="recent-posts" variant="heading-strong-xl" marginBottom="24">
+                Recent posts
+              </Text>
+              <Row horizontal="center" fillWidth>
+                <Posts
+                  exclude={[post.slug]}
+                  range={[1, 1]}
+                  columns="1"
+                  thumbnail
+                  direction="column"
+                />
+              </Row>
+            </Column>
+            <ScrollToHash />
           </Column>
-          <ScrollToHash />
-        </Column>
+        </Row>
+        <Column maxWidth={12} paddingLeft="40" fitHeight m={{ hide: true }} />
       </Row>
-      <Column maxWidth={12} paddingLeft="40" fitHeight m={{ hide: true }} />
-    </Row>
+    </RevealFx>
   );
 }

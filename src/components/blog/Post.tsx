@@ -15,19 +15,23 @@ interface PostProps {
 }
 
 export default function Post({ post, thumbnail, direction }: PostProps) {
-  const [avatarSrc, setAvatarSrc] = useState(person.avatar);
-  const [imageSrc, setImageSrc] = useState(post.metadata.image);
+  const [avatarSrc, setAvatarSrc] = useState<string | undefined>(undefined);
+  const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
+  const [isChecking, setIsChecking] = useState(true);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let mounted = true;
-    getUploadedUrl("avatar").then((url) => {
-      if (mounted && url) setAvatarSrc(url);
-    });
-    getUploadedUrl(`blog-cover-${post.slug}`).then((url) => {
-      if (mounted && url) setImageSrc(url);
-    });
+    Promise.all([getUploadedUrl("avatar"), getUploadedUrl(`blog-cover-${post.slug}`)]).then(
+      ([avatarUrl, imageUrl]) => {
+        if (mounted) {
+          setAvatarSrc(avatarUrl || person.avatar);
+          setImageSrc(imageUrl || post.metadata.image);
+          setIsChecking(false);
+        }
+      },
+    );
     return () => {
       mounted = false;
     };
@@ -72,7 +76,6 @@ export default function Post({ post, thumbnail, direction }: PostProps) {
       fillWidth
       key={post.slug}
       href={`/blog/${post.slug}`}
-      transition="micro-medium"
       direction={direction}
       border="transparent"
       background="transparent"
@@ -80,21 +83,31 @@ export default function Post({ post, thumbnail, direction }: PostProps) {
       radius="l-4"
       gap={direction === "column" ? undefined : "24"}
       s={{ direction: "column" }}
+      style={{
+        cursor: "pointer",
+      }}
     >
       <Row fillWidth gap="24" s={{ direction: "column", gap: "16" }} vertical="start">
-        {post.metadata.image && thumbnail && (
+        {thumbnail && (
           <div
             onContextMenu={handleImageContextMenu}
-            style={{ cursor: "pointer", position: "relative", flex: "0 0 42%" }}
+            style={{
+              cursor: "pointer",
+              position: "relative",
+              flex: "0 0 42%",
+              aspectRatio: "16 / 9",
+            }}
           >
-            <Media
-              priority
-              sizes="(max-width: 768px) 100vw, 640px"
-              radius="l"
-              src={imageSrc || post.metadata.image}
-              alt={`Thumbnail of ${post.metadata.title}`}
-              aspectRatio="16 / 9"
-            />
+            {imageSrc && !isChecking && (
+              <Media
+                priority
+                sizes="(max-width: 768px) 100vw, 640px"
+                radius="l"
+                src={imageSrc}
+                alt={`Thumbnail of ${post.metadata.title}`}
+                aspectRatio="16 / 9"
+              />
+            )}
             <input
               ref={imageInputRef}
               type="file"
@@ -112,7 +125,9 @@ export default function Post({ post, thumbnail, direction }: PostProps) {
               onContextMenu={handleAvatarContextMenu}
               style={{ cursor: "pointer" }}
             >
-              <Avatar src={avatarSrc} size="s" />
+              <div style={{ width: "var(--s-spacing-32)", height: "var(--s-spacing-32)" }}>
+                {avatarSrc && !isChecking && <Avatar src={avatarSrc} size="s" />}
+              </div>
               <input
                 ref={avatarInputRef}
                 type="file"

@@ -4,11 +4,14 @@ import { getCaptions, getUploadedUrl, updateCaption, uploadFile } from "@/utils/
 import { Button, Text } from "@once-ui-system/core";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Cropper from "react-easy-crop";
-import styles from "./MarqueeStrip.module.scss";
+import styles from "./IntroMarquee.module.scss";
 
-interface MarqueeStripProps {
-  images: string[];
-}
+const INTRO_ITEMS = [
+  "· 多段消费电子软硬件产品实习经历、一段闭环的创业经历：覆盖多款前沿AI硬件产品，大学期间自主创业创收10万+，体现用户思维与市场分析能力。",
+  "· 科技产品爱好者：喜欢购买、测评、体验各类消费电子产品、AI产品，多次参加OPPO、vivo、地平线智驾等公司的AI产品用户深度访谈活动（每次三小时起）。",
+  '· 自媒体博主：运营个人小红书账号"向天再借五百亿"，追踪最新的AI产品趋势，主打AI产品&消费电子产品&新能源汽车测评等。收获粉丝500+，点赞13000+。',
+  "· AI产品重度使用者，能高效运用国内外各类前沿AI产品提高工作效率，如Opencode、Gemini in chrome等。",
+];
 
 type Area = { width: number; height: number; x: number; y: number };
 
@@ -34,11 +37,10 @@ async function getCroppedBlob(imageSrc: string, crop: Area): Promise<Blob> {
   });
 }
 
-export function MarqueeStrip({ images }: MarqueeStripProps) {
+export function IntroMarquee() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const marqueeRef = useRef<HTMLDivElement>(null);
-  const [srcs, setSrcs] = useState<string[]>([]);
+  const [srcs, setSrcs] = useState<string[]>(Array(INTRO_ITEMS.length).fill("/images/gallery/horizontal-1.jpg")); // Placeholders
 
   const [cropOpen, setCropOpen] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -50,11 +52,11 @@ export function MarqueeStrip({ images }: MarqueeStripProps) {
 
   useEffect(() => {
     let mounted = true;
-    const keys = images.map((_, i) => `hero-${i}`);
+    const keys = INTRO_ITEMS.map((_, i) => `intro-card-${i}`);
     Promise.all([Promise.all(keys.map((key) => getUploadedUrl(key))), getCaptions()]).then(
       ([urls, caps]) => {
         if (!mounted) return;
-        setSrcs(images.map((src, i) => urls[i] || src));
+        setSrcs((prev) => INTRO_ITEMS.map((_, i) => urls[i] || prev[i]));
         setCaptions(caps);
         setIsChecking(false);
       },
@@ -62,8 +64,7 @@ export function MarqueeStrip({ images }: MarqueeStripProps) {
     return () => {
       mounted = false;
     };
-  }, [images]);
-
+  }, []);
 
   const handleContextMenu = (index: number) => (e: React.MouseEvent) => {
     e.preventDefault();
@@ -72,9 +73,9 @@ export function MarqueeStrip({ images }: MarqueeStripProps) {
   };
 
   const handleClick = (index: number) => async () => {
-    const key = `hero-${index}`;
-    const currentCaption = captions[key] || "";
-    const newCaption = window.prompt("请输入照片说明文字（留空则不显示）：", currentCaption);
+    const key = `intro-card-${index}`;
+    const currentCaption = captions[key] || INTRO_ITEMS[index];
+    const newCaption = window.prompt("请输入说明内容：", currentCaption);
 
     if (newCaption !== null) {
       setCaptions((prev) => ({ ...prev, [key]: newCaption.trim() }));
@@ -102,8 +103,8 @@ export function MarqueeStrip({ images }: MarqueeStripProps) {
   const saveCrop = async () => {
     if (!pendingImage || !croppedAreaPixels || activeIndex === null) return;
     const blob = await getCroppedBlob(pendingImage, croppedAreaPixels);
-    const file = new File([blob], `hero-${activeIndex}.jpg`, { type: "image/jpeg" });
-    const key = `hero-${activeIndex}`;
+    const file = new File([blob], `intro-card-${activeIndex}.jpg`, { type: "image/jpeg" });
+    const key = `intro-card-${activeIndex}`;
     const url = await uploadFile(file, key);
     if (url) {
       const bust = `${url}?t=${Date.now()}`;
@@ -113,48 +114,38 @@ export function MarqueeStrip({ images }: MarqueeStripProps) {
     setPendingImage(null);
   };
 
-  const looped = useMemo(() => {
-    if (srcs.length === 0) return [];
-    return [...srcs, ...srcs, ...srcs, ...srcs, ...srcs, ...srcs];
-  }, [srcs]);
-
-
   return (
     <>
       <div
-        className={styles.marquee}
-        aria-label="Featured images"
-        ref={marqueeRef}
+        className={styles.grid}
+        aria-label="Intro highlights"
         style={{ opacity: isChecking ? 0 : 1, transition: "opacity 0.3s ease" }}
       >
-        <div className={styles.track}>
-          {looped.map((src, i) => {
-            const index = i % srcs.length;
-            const caption = captions[`hero-${index}`];
-            return (
-              <div
-                key={`marquee-item-${index}-${i}`}
-                className={styles.itemWrapper}
-                onContextMenu={handleContextMenu(index)}
-                onClick={handleClick(index)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    handleClick(index)();
-                  }
-                }}
-                tabIndex={0}
-                role="button"
-              >
-                <img className={styles.item} src={src} alt="featured" />
-                {caption && (
-                  <div className={styles.captionOverlay}>
-                    <Text variant="body-default-s">{caption}</Text>
-                  </div>
-                )}
+        {srcs.map((src, index) => {
+          const caption = captions[`intro-card-${index}`] || INTRO_ITEMS[index];
+          return (
+            <div
+              key={`intro-card-${src}-${index}`}
+              className={styles.itemWrapper}
+              onContextMenu={handleContextMenu(index)}
+              onClick={handleClick(index)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  handleClick(index)();
+                }
+              }}
+              tabIndex={0}
+              role="button"
+            >
+              <img className={styles.item} src={src} alt="intro" />
+              <div className={styles.overlay}>
+                <Text variant="body-default-l" className={styles.text}>
+                  {caption}
+                </Text>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
       <input
         ref={inputRef}
@@ -172,7 +163,7 @@ export function MarqueeStrip({ images }: MarqueeStripProps) {
                 image={pendingImage}
                 crop={crop}
                 zoom={zoom}
-                aspect={3 / 2}
+                aspect={16 / 6.5}
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
                 onCropComplete={handleCropComplete}
