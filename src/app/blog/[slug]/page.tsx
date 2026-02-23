@@ -1,6 +1,5 @@
 import { CustomMDX, ScrollToHash } from "@/components";
 import { EditableAvatar } from "@/components/EditableAvatar";
-import { EditableMedia } from "@/components/EditableMedia";
 import { Posts } from "@/components/blog/Posts";
 import { ShareSection } from "@/components/blog/ShareSection";
 import { about, baseURL, blog, person } from "@/resources";
@@ -13,6 +12,7 @@ import {
   HeadingNav,
   Icon,
   Line,
+  Media,
   Meta,
   RevealFx,
   Row,
@@ -130,14 +130,13 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
             </Column>
             <Column as="article" maxWidth="s" horizontal="start" align="start" gap="24">
               {post.metadata.image && (
-                <EditableMedia
-                  src={post.metadata.image}
+                <Media
+                  src={`/uploads/blog-cover-${post.slug}.jpg`}
                   alt={post.metadata.title}
                   aspectRatio="16/9"
                   priority
                   sizes="(min-width: 768px) 100vw, 768px"
                   radius="l"
-                  storageKey={`blog-cover-${post.slug}`}
                 />
               )}
               <CustomMDX source={post.content} />
