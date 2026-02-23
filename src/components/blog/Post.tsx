@@ -165,9 +165,16 @@ export default function Post({ post, thumbnail, direction }: PostProps) {
               {formatDate(post.metadata.publishedAt, false)}
             </Text>
           </Row>
-          <Text variant="heading-strong-l" style={{ whiteSpace: "nowrap" }}>
-            {post.metadata.title}
-          </Text>
+          <Row gap="16" vertical="center">
+            <Text variant="heading-strong-l" style={{ whiteSpace: "nowrap" }}>
+              {post.metadata.title}
+            </Text>
+          </Row>
+          {post.metadata.summary && (
+            <Text variant="body-default-m" onBackground="neutral-weak">
+              {post.metadata.summary}
+            </Text>
+          )}
         </Column>
       </Row>
     </Card>
