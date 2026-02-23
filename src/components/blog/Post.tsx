@@ -6,6 +6,19 @@ import { Media } from "@once-ui-system/core";
 import { Avatar, Card, Column, Row, Text } from "@once-ui-system/core";
 import type React from "react";
 
+// 博客封面路径映射（根据实际文件后缀）
+const blogCoverMap: Record<string, string> = {
+  "tencent-crash-qq-wechat": "/uploads/blog-cover-tencent-crash-qq-wechat.webp",
+  "involution-short": "/uploads/blog-cover-involution-short.png",
+  "weilai-nio-power-baas": "/uploads/blog-cover-weilai-nio-power-baas.png",
+  "ai-2026-predictions": "/uploads/blog-cover-ai-2026-predictions.png",
+  "why-car-iot-ai-glasses": "/uploads/blog-cover-why-car-iot-ai-glasses.jpeg",
+  "meta-gen2-ai-glasses": "/uploads/blog-cover-meta-gen2-ai-glasses.avif",
+  "xiaomi-car": "/uploads/blog-cover-xiaomi-car.jpg",
+  "cycle-charm": "/uploads/blog-cover-cycle-charm.jpg",
+  "art-of-tradeoff": "/uploads/blog-cover-art-of-tradeoff.jpg",
+};
+
 interface PostProps {
   post: {
     slug: string;
@@ -20,7 +33,7 @@ interface PostProps {
 }
 
 export default function Post({ post, thumbnail, direction }: PostProps) {
-  const imageSrc = `/uploads/blog-cover-${post.slug}.jpg`;
+  const imageSrc = blogCoverMap[post.slug] || `/uploads/blog-cover-${post.slug}.jpg`;
 
   return (
     <Card

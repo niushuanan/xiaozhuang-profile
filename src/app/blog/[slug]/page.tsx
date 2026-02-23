@@ -24,6 +24,19 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import React from "react";
 
+// 博客封面路径映射（根据实际文件后缀）
+const blogCoverMap: Record<string, string> = {
+  "tencent-crash-qq-wechat": "/uploads/blog-cover-tencent-crash-qq-wechat.webp",
+  "involution-short": "/uploads/blog-cover-involution-short.png",
+  "weilai-nio-power-baas": "/uploads/blog-cover-weilai-nio-power-baas.png",
+  "ai-2026-predictions": "/uploads/blog-cover-ai-2026-predictions.png",
+  "why-car-iot-ai-glasses": "/uploads/blog-cover-why-car-iot-ai-glasses.jpeg",
+  "meta-gen2-ai-glasses": "/uploads/blog-cover-meta-gen2-ai-glasses.avif",
+  "xiaomi-car": "/uploads/blog-cover-xiaomi-car.jpg",
+  "cycle-charm": "/uploads/blog-cover-cycle-charm.jpg",
+  "art-of-tradeoff": "/uploads/blog-cover-art-of-tradeoff.jpg",
+};
+
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
   const posts = getPosts(["src", "app", "blog", "posts"]);
   return posts.map((post) => ({
@@ -131,7 +144,7 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
             <Column as="article" maxWidth="s" horizontal="start" align="start" gap="24">
               {post.metadata.image && (
                 <Media
-                  src={`/uploads/blog-cover-${post.slug}.jpg`}
+                  src={blogCoverMap[post.slug] || `/uploads/blog-cover-${post.slug}.jpg`}
                   alt={post.metadata.title}
                   aspectRatio="16/9"
                   priority
