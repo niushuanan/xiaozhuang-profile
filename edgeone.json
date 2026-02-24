@@ -2,5 +2,11 @@
   "name": "xiaozhuang-portfolio",
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
-  "nodeVersion": "20"
+  "nodeVersion": "20",
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/"
+    }
+  ]
 }
